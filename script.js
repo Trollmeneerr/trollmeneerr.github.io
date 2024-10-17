@@ -1,3 +1,15 @@
+function copyToClipboard() {
+    var copyText = document.getElementById("copyText").innerHTML;
+    navigator.clipboard.writeText(copyText)
+        .then(() => {
+            alert("Path copied to clipboard successfully!");
+        })
+        .catch(err => {
+            console.error('Failed to copy: ', err);
+            alert("Failed to copy Path to clipboard.");
+        });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const MapID = {

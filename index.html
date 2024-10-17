@@ -72,9 +72,31 @@
         flex: 2;
         padding: 20px;
     }
-    input, button {
-        font-size: 50px;
+    .input-section{
+        text-align: center;
+        margin-bottom: 50px;
     }
+    .input-section  > h1{
+        font-size: 40px;
+    }
+    .input-section  > p{
+        font-size: 20px;
+    }
+    input[type="file"], button {
+        display: none;
+      }
+      
+      .custom-file-upload, .processDataBtn {
+        border: 1px solid #ccc;
+        display: inline-block;
+        padding: 12px 24px;
+        cursor: pointer;
+        font-size: 25px;
+        width: 300px;
+      }
+      .pink{
+        color: #FF4081;
+      }
     
 </style>
 </head>
@@ -82,10 +104,14 @@
     <section class="input-section">
         <h1>SaveFile Input</h1>
         <p>
-            To Locate Your SaveFile Press Win + R and paste this into the text field "%localappdata%low\Kinetic Games\Phasmophobia", When you did that copy the file "SaveFile.txt" and drag it here.
+            To Locate Your SaveFile Navigate to <span id="copyText" class="pink" onclick="copyToClipboard()" value="%localappdata%low\Kinetic Games\Phasmophobia">%localappdata%low\Kinetic Games\Phasmophobia</span> Click To copy.
+            When you did that, copy the file "SaveFile.txt" and drag it here.
         </p>
+        <label for="jsonFileInput" class="custom-file-upload">Upload/Drag File Here</label>
         <input type="file" id="jsonFileInput" accept=".txt">
+        <label for="processDataBtn" class="processDataBtn">Process Data</label>
         <button id="processDataBtn">Process Data</button>
+    </label>
     </section>
 <section class="PGS">
     <article class="player">
