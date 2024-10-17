@@ -3,32 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify wrapped</title>
-</head>
+    <title>Decrypted Data</title>
 <style>
-    body{
-    background-color: hsl(0, 0%, 0%);
-    display: flex;
-    justify-content: center;
-    justify-items: center;
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 20px; 
+        background-color: #121212; /* Dark background */
+        color: #E0E0E0; /* Light gray text for contrast */
     }
-    section{
+    h1 { 
+        color: #FF4081; /* Pink color for headers */
+        text-align: center; 
+        margin-bottom: 20px; 
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-bottom: 40px; 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        border-radius: 8px; /* Rounded corners for the table */
+        overflow: hidden; /* Prevents border radius from leaking */
+    }
+    th, td { 
+        padding: 12px; 
+        text-align: left; 
+        border: 1px solid #444; /* Darker border for better visibility */
+    }
+    th { 
+        background-color: #FF4081; /* Pink background for header */
+        color: white; 
+    }
+    tr:nth-child(even) { 
+        background-color: #1E1E1E; /* Darker gray for even rows */
+    }
+    tr:hover { 
+        background-color: #333; /* Darker hover effect */
+    }
+    td { 
+        transition: background-color 0.3s; 
+    }
+    strong { 
+        color: #FF4081; /* Pink for strong text */
+    }
+    
+    .PGS{
         display: flex;
+        width: 100%;
     }
-    img{
-        height: 100vh;
+    .player{
+        flex: 1;
+        padding: 20px;
     }
+    
+    .ghost{
+        flex: 1;
+        padding: 20px;
+    }
+    
+    .GMdata{
+        display: flex;
+        width: 100%;
+    }
+    .maps{
+        flex: 1;
+        padding: 20px;
+    }
+    .ghosts{
+        flex: 2;
+        padding: 20px;
+    }
+    
 </style>
+</head>
 <body>
-    <section>
-        <img src="spotifywraped.png" alt="Spotifywrapped">
-        <article>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0oKYNnouzywEqUnY7z5uhD?utm_source=generator" width="100%" height="20%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/57mgyauwTOeC725Xa0zJdw?utm_source=generator" width="100%" height="20%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4Ace8alexaAj3QHwprUqQq?utm_source=generator" width="100%" height="20%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3fUyhbetp4O7AEbCMAAWhn?utm_source=generator" width="100%" height="20%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5DcVJM3W2lkjogTromoy3D?utm_source=generator" width="100%" height="20%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <section class="input-section">
+        <h1>SaveFile Input</h1>
+        <p>
+            To Locate Your SaveFile Press Win + R and paste this into the text field "%localappdata%low\Kinetic Games\Phasmophobia", When you did that copy the file "SaveFile.txt" and drag it here.
+        </p>
+        <input width="500px" height="200px" type="file" id="jsonFileInput" accept=".txt">
+        <button id="processDataBtn">Process Data</button>
+    </section>
+<section class="PGS">
+    <article class="player">
+        <h1>Player Statistics</h1>
+        <table id="player">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Prestige</td>
+                <td id="prestige">Not Found</td>
+            </tr>
+            <tr>
+                <td>Level</td>
+                <td id="level">Not Found</td>
+            </tr>
+            <tr>
+                <td>Player Money</td>
+                <td id="playerMoney">Not Found</td>
+            </tr>
+            <tr>
+                <td>Ghosts Identified Amount</td>
+                <td id="ghostsIdentifiedAmount">Not Found</td>
+            </tr>
+            <tr>
+                <td>Ghosts Misidentified Amount</td>
+                <td id="ghostsMisidentifiedAmount">Not Found</td>
+            </tr>
+            <tr>
+                <td>Items Lost</td>
+                <td id="itemsLost">Not Found</td>
+            </tr>
+            <tr>
+                <td>Items Bought</td>
+                <td id="itemsBought">Not Found</td>
+            </tr>
+            <tr>
+                <td>Money Spent</td>
+                <td id="moneySpent">Not Found</td>
+            </tr>
+            <tr>
+                <td>Money Earned</td>
+                <td id="moneyEarned">Not Found</td>
+            </tr>
+            <tr>
+                <td>Died Amount</td>
+                <td id="diedAmount">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time Spent Investigating</td>
+                <td id="timeSpentInvestigating">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time Spent in Light</td>
+                <td id="timeSpentInLight">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time Spent in Dark</td>
+                <td id="timeSpentInDark">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time Spent Being Chased</td>
+                <td id="timeSpentBeingChased">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time Spent in Ghost's Room</td>
+                <td id="timeSpentInGhostsRoom">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time Spent in Truck</td>
+                <td id="timeSpentInTruck">Not Found</td>
+            </tr>
+            <tr>
+                <td>Sanity Gained</td>
+                <td id="sanityGained">Not Found</td>
+            </tr>
+            <tr>
+                <td>Sanity Lost</td>
+                <td id="sanityLost">Not Found</td>
+            </tr>
+            <tr>
+                <td>Distance Travelled</td>
+                <td id="distanceTravelled">Not Found</td>
+            </tr>
+            <tr>
+                <td>Amount of Bones Collected</td>
+                <td id="amountOfBonesCollected">Not Found</td>
+            </tr>
+            <tr>
+                <td>Photos Taken</td>
+                <td id="photosTaken">Not Found</td>
+            </tr>
+        </table>
+
+        <h1>Badges</h1>
+        <table>
+            <tr>
+                <th>Badge Name</th>
+                <th>Progress</th>
+            </tr>
+            <tr>
+                <td>Lighthouse Keeper Progression</td>
+                <td id="lighthouseKeeper">Not Found</td>
+            </tr>
+            <tr>
+                <td>Apocalypse Bronze</td>
+                <td id="apocalypseBronze">Not Found</td>
+            </tr>
+            <tr>
+                <td>Apocalypse Silver</td>
+                <td id="apocalypseSilver">Not Found</td>
+            </tr>
+            <tr>
+                <td>Apocalypse Gold</td>
+                <td id="apocalypseGold">Not Found</td>
+            </tr>
+            <tr>
+                <td>Holiday 2022</td>
+                <td id="holiday22">Not Found</td>
+            </tr>
+            <tr>
+                <td>Easter 2023</td>
+                <td id="easter23">Not Found</td>
+            </tr>
+            <tr>
+                <td>Halloween 2023</td>
+                <td id="halloween23">Not Found</td>
+            </tr>
+            <tr>
+                <td>Christmas 2023</td>
+                <td id="christmas23">Not Found</td>
+            </tr>
+            <tr>
+                <td>Easter 2024</td>
+                <td id="easter24">Not Found</td>
+            </tr>
+        </table>
+    </article>
+
+    <article class="ghost">
+        <h1>Ghost Statistics</h1>
+        <table id="ghostdata">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Ghost Distance Travelled</td>
+                <td id="ghostDistanceTravelled">Not Found</td>
+            </tr>
+            <tr>
+                <td>Amount of Ghost Interactions</td>
+                <td id="ghostInteractions">Not Found</td>
+            </tr>
+            <tr>
+                <td>Abilities Used</td>
+                <td id="abilitiesUsed">Not Found</td>
+            </tr>
+            <tr>
+                <td>Amount of Ghost Hunts</td>
+                <td id="ghostHunts">Not Found</td>
+            </tr>
+            <tr>
+                <td>Time in Favourite Room</td>
+                <td id="timeInFavouriteRoom">Not Found</td>
+            </tr>
+            <tr>
+                <td>Room Changed</td>
+                <td id="roomChanged">Not Found</td>
+            </tr>
+            <tr>
+                <td>Fusebox Toggles</td>
+                <td id="fuseboxToggles">Not Found</td>
+            </tr>
+            <tr>
+                <td>Lights Switched</td>
+                <td id="lightsSwitched">Not Found</td>
+            </tr>
+            <tr>
+                <td>Objects Used</td>
+                <td id="objectsUsed">Not Found</td>
+            </tr>
+            <tr>
+                <td>Doors Moved</td>
+                <td id="doorsMoved">Not Found</td>
+            </tr>
+            <tr>
+                <td>Ghost Events Amount</td>
+                <td id="ghostEvents">Not Found</td>
+            </tr>
+            <tr>
+                <td>Total Hunt Time</td>
+                <td id="totalHuntTime">Not Found</td>
+            </tr>
+        </table>
+
+        <h1>Cursed Possession Statistics</h1>
+        <table id="cursed">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Music Boxes Found</td>
+                <td id="musicBoxesFound">Not Found</td>
+            </tr>
+            <tr>
+                <td>Ouijas Found</td>
+                <td id="ouijasFound">Not Found</td>
+            </tr>
+            <tr>
+                <td>Summoning Circles Used</td>
+                <td id="summoningCirclesUsed">Not Found</td>
+            </tr>
+            <tr>
+                <td>Mirrors Found</td>
+                <td id="mirrorsFound">Not Found</td>
+            </tr>
+            <tr>
+                <td>Monkey Paw Found</td>
+                <td id="monkeyPawFound">Not Found</td>
+            </tr>
+            <tr>
+                <td>Voodoo Dolls Found</td>
+                <td id="voodoosFound">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Priestess</td>
+                <td id="tarotPriestess">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Death</td>
+                <td id="tarotDeath">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Fool</td>
+                <td id="tarotFool">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Wheel</td>
+                <td id="tarotWheel">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Tower</td>
+                <td id="tarotTower">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Devil</td>
+                <td id="tarotDevil">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Hermit</td>
+                <td id="tarotHermit">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Moon</td>
+                <td id="tarotMoon">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Sun</td>
+                <td id="tarotSun">Not Found</td>
+            </tr>
+            <tr>
+                <td>Tarot Hanged Man</td>
+                <td id="tarotHangedMan">Not Found</td>
+            </tr>
+        </table>
+    </article>
+</section>
+<section class='GMdata'>
+    <section class='GMdata'>
+        <article class='ghosts'>
+            <h1>Ghost Data</h1>
+            <table id="ghostDataTable">
+                <tr>
+                    <th>Ghost Name</th>
+                    <th>Most Common Count</th>
+                    <th>Kills</th>
+                    <th>Death Percentage</th>
+                </tr>
+            </table>
+        </article>
+
+        <article class='maps'>
+            <h1>Played Maps Data</h1>
+            <table id="mapsDataTable">
+                <tr>
+                    <th>Map Name</th>
+                    <th>Value</th>
+                    <th>Percentage</th>
+                </tr>
+            </table>
         </article>
     </section>
+    <script src="script.js"></script>
 </body>
 </html>
