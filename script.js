@@ -164,8 +164,9 @@ function hasBadge(value) {
 
 // Check progress for the "Lighthouse Keeper" badge
 function lighthouseKeeper(data) {
-    if (data === 0) return 'Not Started';
-    if (data >= 50) return 'Completed';
+    if (data.lighthouseKeeperProgression.value === 0) return 'Not Started';
+    else { return data.lighthouseKeeperProgression.value
+    if (data.lighthouseKeeperProgression.value == 50) return 'Completed';
     return data;
 }
 
@@ -237,7 +238,7 @@ function populateData(data) {
     document.getElementById('photosTaken').textContent = data.photosTaken.value || 'N/A';
 
     // Badges
-    document.getElementById('lighthouseKeeper').textContent = lighthouseKeeper(data.lighthouseKeeperProgression.value) || 'N/A';
+    document.getElementById('lighthouseKeeper').textContent = lighthouseKeeper(data) || 'N/A';
     document.getElementById('apocalypseBronze').textContent = hasBadge(data.ApocalypseBronzeCompleted.value) || 'N/A';
     document.getElementById('apocalypseSilver').textContent = hasBadge(data.ApocalypseSilverCompleted.value) || 'N/A';
     document.getElementById('apocalypseGold').textContent = hasBadge(data.ApocalypseGoldCompleted.value) || 'N/A';
