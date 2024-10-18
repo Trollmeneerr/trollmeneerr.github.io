@@ -51,12 +51,7 @@
         display: flex;
         width: 100%;
     }
-    .player{
-        flex: 1;
-        padding: 20px;
-    }
-    
-    .ghost{
+    .player, .ghost, .cursed{
         flex: 1;
         padding: 20px;
     }
@@ -98,14 +93,54 @@
       .pink{
         color: #FF4081;
       }
+      #copyText:hover{
+        color: #bf0040;
+        cursor: pointer;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); /* Dark background with transparency */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* High z-index to appear above other content */
+    }
     
+    /* Centered loading spinner */
+    .loading-spinner {
+        text-align: center;
+        color: white;
+    }
+    
+    /* Simple spinner animation */
+    .spinner {
+        border: 6px solid #f3f3f3; /* Light grey */
+        border-top: 6px solid #FF4081; /* Blue */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    
+    /* Spinner animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 </head>
 <body>
     <section class="input-section">
         <h1>SaveFile Input</h1>
         <p>
-            To Locate Your SaveFile Navigate to <span id="copyText" class="pink" onclick="copyToClipboard()" value="%localappdata%low\Kinetic Games\Phasmophobia">%localappdata%low\Kinetic Games\Phasmophobia</span> Click To copy.
+            See a bit more of your savefile from Phasmophobia, Make sure to <span class="pink">scroll all the way down </span>when you uploaded your savefile! 
+            <br>
+            <br>
+            To Locate Your SaveFile Navigate to [<span id="copyText" class="pink" onclick="copyToClipboard()" value="%localappdata%low\Kinetic Games\Phasmophobia">%localappdata%low\Kinetic Games\Phasmophobia</span>].
             When you did that, copy the file "SaveFile.txt" and drag it here.
         </p>
         <label for="jsonFileInput" class="custom-file-upload">Upload/Drag File Here</label>
@@ -113,6 +148,12 @@
         <label for="processDataBtn" class="processDataBtn">Process Data</label>
         <button id="processDataBtn">Process Data</button>
     </label>
+    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+        <div class="loading-spinner">
+            <p>Loading...</p>
+            <div class="spinner"></div> <!-- Spinner animation -->
+        </div>
+    </div>
     </section>
 <section class="PGS">
     <article class="player">
@@ -131,8 +172,16 @@
                 <td id="level">Not Found</td>
             </tr>
             <tr>
+                <td>Old Level</td>
+                <td id="oldLevel">Not Found</td>
+            </tr>
+            <tr>
                 <td>Player Money</td>
                 <td id="playerMoney">Not Found</td>
+            </tr>
+            <tr>
+                <td>Objectives Completed</td>
+                <td id="objectivesCompleted">Not Found</td>
             </tr>
             <tr>
                 <td>Ghosts Identified Amount</td>
@@ -142,21 +191,26 @@
                 <td>Ghosts Misidentified Amount</td>
                 <td id="ghostsMisidentifiedAmount">Not Found</td>
             </tr>
+            
             <tr>
-                <td>Items Lost</td>
-                <td id="itemsLost">Not Found</td>
+                <td>Phrases Recognized</td>
+                <td id="phrasesRecognized">Not Found</td>
             </tr>
             <tr>
                 <td>Items Bought</td>
                 <td id="itemsBought">Not Found</td>
             </tr>
             <tr>
-                <td>Money Spent</td>
-                <td id="moneySpent">Not Found</td>
+                <td>Items Lost</td>
+                <td id="itemsLost">Not Found</td>
             </tr>
             <tr>
                 <td>Money Earned</td>
                 <td id="moneyEarned">Not Found</td>
+            </tr>
+            <tr>
+                <td>Money Spent</td>
+                <td id="moneySpent">Not Found</td>
             </tr>
             <tr>
                 <td>Died Amount</td>
@@ -187,6 +241,10 @@
                 <td id="timeSpentInTruck">Not Found</td>
             </tr>
             <tr>
+                <td>Ghosts Repelled</td>
+                <td id="ghostsRepelled">Not Found</td>
+            </tr>
+            <tr>
                 <td>Sanity Gained</td>
                 <td id="sanityGained">Not Found</td>
             </tr>
@@ -205,50 +263,6 @@
             <tr>
                 <td>Photos Taken</td>
                 <td id="photosTaken">Not Found</td>
-            </tr>
-        </table>
-
-        <h1>Badges</h1>
-        <table>
-            <tr>
-                <th>Badge Name</th>
-                <th>Progress</th>
-            </tr>
-            <tr>
-                <td>Lighthouse Keeper Progression</td>
-                <td id="lighthouseKeeper">Not Found</td>
-            </tr>
-            <tr>
-                <td>Apocalypse Bronze</td>
-                <td id="apocalypseBronze">Not Found</td>
-            </tr>
-            <tr>
-                <td>Apocalypse Silver</td>
-                <td id="apocalypseSilver">Not Found</td>
-            </tr>
-            <tr>
-                <td>Apocalypse Gold</td>
-                <td id="apocalypseGold">Not Found</td>
-            </tr>
-            <tr>
-                <td>Holiday 2022</td>
-                <td id="holiday22">Not Found</td>
-            </tr>
-            <tr>
-                <td>Easter 2023</td>
-                <td id="easter23">Not Found</td>
-            </tr>
-            <tr>
-                <td>Halloween 2023</td>
-                <td id="halloween23">Not Found</td>
-            </tr>
-            <tr>
-                <td>Christmas 2023</td>
-                <td id="christmas23">Not Found</td>
-            </tr>
-            <tr>
-                <td>Easter 2024</td>
-                <td id="easter24">Not Found</td>
             </tr>
         </table>
     </article>
@@ -309,12 +323,66 @@
                 <td id="totalHuntTime">Not Found</td>
             </tr>
         </table>
+        <h1>Badges</h1>
+        <table>
+            <tr>
+                <th>Badge Name</th>
+                <th>Progress</th>
+            </tr>
+            <tr>
+                <td>Lighthouse Keeper Progression</td>
+                <td id="lighthouseKeeper">Not Found</td>
+            </tr>
+            <tr>
+                <td>Apocalypse Bronze</td>
+                <td id="apocalypseBronze">Not Found</td>
+            </tr>
+            <tr>
+                <td>Apocalypse Silver</td>
+                <td id="apocalypseSilver">Not Found</td>
+            </tr>
+            <tr>
+                <td>Apocalypse Gold</td>
+                <td id="apocalypseGold">Not Found</td>
+            </tr>
+            <tr>
+                <td>Holiday 2022</td>
+                <td id="holiday22">Not Found</td>
+            </tr>
+            <tr>
+                <td>Easter 2023</td>
+                <td id="easter23">Not Found</td>
+            </tr>
+            <tr>
+                <td>Halloween 2023</td>
+                <td id="halloween23">Not Found</td>
+            </tr>
+            <tr>
+                <td>Christmas 2023</td>
+                <td id="christmas23">Not Found</td>
+            </tr>
+            <tr>
+                <td>Easter 2024</td>
+                <td id="easter24">Not Found</td>
+            </tr>
+        </table>
 
-        <h1>Cursed Possession Statistics</h1>
+        
+    </article>
+    <article class="cursed">
+    <h1>Cursed Possession Statistics</h1>
         <table id="cursed">
             <tr>
                 <th>Property</th>
                 <th>Value</th>
+            </tr>
+            <tr>
+                <td>Cursed Possessions Uses</td>
+                <td id="amountOfCursedPossessionsUsed">Not Found</td>
+            </tr>
+            <tr>
+                <td>Cursed Hunts Triggered</td>
+                <td id="amountOfCursedHuntsTriggered">Not Found</td>
             </tr>
             <tr>
                 <td>Music Boxes Found</td>
@@ -381,7 +449,6 @@
                 <td id="tarotHangedMan">Not Found</td>
             </tr>
         </table>
-    </article>
 </section>
 <section class='GMdata'>
     <section class='GMdata'>

@@ -114,19 +114,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return mapping;
     }
 
+    function showLoading() {
+        // Show loading screen and hide other content
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        // Simulate a loading process (like an API call or data processing)
+        setTimeout(function() {
+            hideLoading();
+        }, 3000); // Example: hide loading after 3 seconds
+    }
+    
+    function hideLoading() {
+        // Hide loading screen and show the actual content
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
     // Handling the file input and decryption
     document.getElementById('processDataBtn').addEventListener('click', async() => {
         const fileInput = document.getElementById('jsonFileInput');
         const password = 't36gref9u84y7f43g'; // Replace this with the actual password
+        showLoading();
+
 
         if (!fileInput.files.length) {
             alert('Please select a file.');
             return;
         }
-
         const file = fileInput.files[0];
         const reader = new FileReader();
-
+        // add delay 3s
+        await new Promise(resolve => setTimeout(resolve, 3000));
         reader.onload = async(event) => {
             const encryptedData = new Uint8Array(event.target.result); // Read the file as binary
 
@@ -155,48 +171,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if a badge is completed based on value
     function hasBadge(data, x) {
         if (!data[x]) {
-            return 'Not Found'; // If the object for the badge doesn't exist
-        } else if (data[x].value == null) {
-            return 'Not Completed'; // If the badge exists but the value is null
+            return 'Not Completed';
+        } else if (data[x]?.value == null) {
+            return 'Not Completed';
         } else {
-            console.log(data[x].value)
-            return 'Completed'; // If the value exists and is not null
+            return 'Completed';
         }
     }
+    
 
     // Check progress for the "Lighthouse Keeper" badge
     function lighthouseKeeper(data) {
-        if (data.lighthouseKeeperProgression.value === 0) return 'Not Started';
+        if (!data.lighthouseKeeperProgression || data.lighthouseKeeperProgression.value == null) {
+            return '0';
+        }
         if (data.lighthouseKeeperProgression.value == 50) return 'Completed';
-        else { return data.lighthouseKeeperProgression.value };
+        return data.lighthouseKeeperProgression.value;
     }
 
     // Check if holiday 2022 event is completed
     function holiday22(data) {
         if (
-            data["10 Ridgeview CourtChristmasComplete"].value === 1 &&
-            data["Grafton FarmhouseChristmasComplete"].value === 1 &&
-            data["Camp WoodwindChristmasComplete"].value === 1 &&
-            data["Bleasdale FarmhouseChristmasComplete"].value === 1 &&
-            data["6 Tanglewood DriveChristmasComplete"].value === 1 &&
-            data["42 Edgefield RoadChristmasComplete"].value === 1 &&
-            data["13 Willow StreetChristmasComplete"].value === 1
+            data["10 Ridgeview CourtChristmasComplete"]?.value === 1 &&
+            data["Grafton FarmhouseChristmasComplete"]?.value === 1 &&
+            data["Camp WoodwindChristmasComplete"]?.value === 1 &&
+            data["Bleasdale FarmhouseChristmasComplete"]?.value === 1 &&
+            data["6 Tanglewood DriveChristmasComplete"]?.value === 1 &&
+            data["42 Edgefield RoadChristmasComplete"]?.value === 1 &&
+            data["13 Willow StreetChristmasComplete"]?.value === 1
         ) {
             return 'Completed';
         } else {
             return 'Not Completed';
         }
     }
-
+    
     function holiday23(data) {
         if (
-            data["10 Ridgeview CourtHoliday23Complete"].value === 1 &&
-            data["Grafton FarmhouseHoliday23Complete"].value === 1 &&
-            data["Camp WoodwindHoliday23Complete"].value === 1 &&
-            data["Bleasdale FarmhouseHoliday23Complete"].value === 1 &&
-            data["6 Tanglewood DriveHoliday23Complete"].value === 1 &&
-            data["42 Edgefield RoadHoliday23Complete"].value === 1 &&
-            data["13 Willow StreetHoliday23Complete"].value === 1
+            data["10 Ridgeview CourtHoliday23Complete"]?.value === 1 &&
+            data["Grafton FarmhouseHoliday23Complete"]?.value === 1 &&
+            data["Camp WoodwindHoliday23Complete"]?.value === 1 &&
+            data["Bleasdale FarmhouseHoliday23Complete"]?.value === 1 &&
+            data["6 Tanglewood DriveHoliday23Complete"]?.value === 1 &&
+            data["42 Edgefield RoadHoliday23Complete"]?.value === 1 &&
+            data["13 Willow StreetHoliday23Complete"]?.value === 1
+        ) {
+            return 'Completed';
+        } else {
+            return 'Not Completed';
+        }
+    }
+    
+    function easter23(data) {
+        if (
+            data["10 Ridgeview CourtEaster2023Complete"]?.value === 1 &&
+            data["Grafton FarmhouseEaster2023Complete"]?.value === 1 &&
+            data["Camp WoodwindEaster2023Complete"]?.value === 1 &&
+            data["Bleasdale FarmhouseEaster2023Complete"]?.value === 1 &&
+            data["6 Tanglewood DriveEaster2023Complete"]?.value === 1 &&
+            data["42 Edgefield RoadEaster2023Complete"]?.value === 1 &&
+            data["13 Willow StreetEaster2023Complete"]?.value === 1
         ) {
             return 'Completed';
         } else {
@@ -204,46 +238,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function easter23(data) {
-        if (
-            data["10 Ridgeview CourtEaster2023Complete"].value === 1 &&
-            data["Grafton FarmhouseEaster2023Complete"].value === 1 &&
-            data["Camp WoodwindEaster2023Complete"].value === 1 &&
-            data["Bleasdale FarmhouseEaster2023Complete"].value === 1 &&
-            data["6 Tanglewood DriveEaster2023Complete"].value === 1 &&
-            data["42 Edgefield RoadEaster2023Complete"].value === 1 &&
-            data["13 Willow StreetEaster2023Complete"].value === 1
-        ) {
-            return 'Completed';
-        } else {
-            return 'Not Completed';
-        }
+    function safeGetValue(data, field) {
+        return data?.[field]?.value ?? '0';
     }
+
+    function convertToTimeFormat(seconds) {
+        if (!seconds || isNaN(seconds)) return '0 Seconds';
+        seconds = Math.floor(seconds);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+    
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function convertToMeters(meters){
+        if (!meters || isNaN(meters)) return '0';
+        return Math.round(meters) + ' meter';
+    }
+
+    function roundPrecent(value) {
+        if (!value || isNaN(value)) return '0%';
+        return Math.round(value) + '%';
+    }
+
 
     function populateData(data) {
         // Player Statistics
-        document.getElementById('prestige').textContent = data.Prestige.value || 'N/A';
-        document.getElementById('level').textContent = data.NewLevel.value || 'N/A';
-        document.getElementById('playerMoney').textContent = data.PlayersMoney.value || 'N/A';
-        document.getElementById('ghostsIdentifiedAmount').textContent = data.ghostsIdentifiedAmount.value || 'N/A';
-        document.getElementById('ghostsMisidentifiedAmount').textContent = data.ghostsMisidentifiedAmount.value || 'N/A';
-        document.getElementById('itemsLost').textContent = data.itemsLost.value || 'N/A';
-        document.getElementById('itemsBought').textContent = data.itemsBought.value || 'N/A';
-        document.getElementById('moneySpent').textContent = data.moneySpent.value || 'N/A';
-        document.getElementById('moneyEarned').textContent = data.moneyEarned.value || 'N/A';
-        document.getElementById('diedAmount').textContent = data.diedAmount.value || 'N/A';
-        document.getElementById('timeSpentInvestigating').textContent = data.timeSpentInvestigating.value || 'N/A';
-        document.getElementById('timeSpentInLight').textContent = data.timeSpentInLight.value || 'N/A';
-        document.getElementById('timeSpentInDark').textContent = data.timeSpentInDark.value || 'N/A';
-        document.getElementById('timeSpentBeingChased').textContent = data.timeSpentBeingChased.value || 'N/A';
-        document.getElementById('timeSpentInGhostsRoom').textContent = data.timeSpentInGhostsRoom.value || 'N/A';
-        document.getElementById('timeSpentInTruck').textContent = data.timeSpentInTruck.value || 'N/A';
-        document.getElementById('sanityGained').textContent = data.sanityGained.value || 'N/A';
-        document.getElementById('sanityLost').textContent = data.sanityLost.value || 'N/A';
-        document.getElementById('distanceTravelled').textContent = data.distanceTravelled.value || 'N/A';
-        document.getElementById('amountOfBonesCollected').textContent = data.amountOfBonesCollected.value || 'N/A';
-        document.getElementById('photosTaken').textContent = data.photosTaken.value || 'N/A';
-
+        document.getElementById('prestige').textContent = safeGetValue(data, 'Prestige');
+        document.getElementById('level').textContent = safeGetValue(data, 'NewLevel');
+        document.getElementById('oldLevel').textContent = safeGetValue(data, 'Level');
+        document.getElementById('playerMoney').textContent = safeGetValue(data, 'PlayersMoney');
+        document.getElementById('objectivesCompleted').textContent = safeGetValue(data, 'ObjectivesCompleted');
+        document.getElementById('ghostsIdentifiedAmount').textContent = safeGetValue(data, 'ghostsIdentifiedAmount');
+        document.getElementById('ghostsMisidentifiedAmount').textContent = safeGetValue(data, 'ghostsMisidentifiedAmount');
+        document.getElementById('phrasesRecognized').textContent = safeGetValue(data, 'phrasesRecognized');
+        document.getElementById('itemsBought').textContent = safeGetValue(data, 'itemsBought');
+        document.getElementById('itemsLost').textContent = safeGetValue(data, 'itemsLost');
+        document.getElementById('moneySpent').textContent = safeGetValue(data, 'moneySpent');
+        document.getElementById('moneyEarned').textContent = safeGetValue(data, 'moneyEarned');
+        document.getElementById('diedAmount').textContent = safeGetValue(data, 'diedAmount');
+        document.getElementById('timeSpentInvestigating').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInvestigating'));
+        document.getElementById('timeSpentInLight').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInLight'));
+        document.getElementById('timeSpentInDark').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInDark'));
+        document.getElementById('timeSpentBeingChased').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentBeingChased'));
+        document.getElementById('timeSpentInGhostsRoom').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInGhostsRoom'));
+        document.getElementById('timeSpentInTruck').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInTruck'));
+        document.getElementById('ghostsRepelled').textContent = safeGetValue(data, 'ghostsRepelled');
+        document.getElementById('sanityGained').textContent = roundPrecent(safeGetValue(data, 'sanityGained'));
+        document.getElementById('sanityLost').textContent = roundPrecent(safeGetValue(data, 'sanityLost'));
+        document.getElementById('distanceTravelled').textContent = convertToMeters(safeGetValue(data, 'distanceTravelled'));
+        document.getElementById('amountOfBonesCollected').textContent = safeGetValue(data, 'amountOfBonesCollected');
+        document.getElementById('photosTaken').textContent = safeGetValue(data, 'photosTaken');
+    
         // Badges
         document.getElementById('lighthouseKeeper').textContent = lighthouseKeeper(data) || 'N/A';
         document.getElementById('apocalypseBronze').textContent = hasBadge(data, "ApocalypseBronzeCompleted") || 'N/A';
@@ -254,39 +301,44 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('halloween23').textContent = hasBadge(data, "halloween23Complete") || 'N/A';
         document.getElementById('christmas23').textContent = holiday23(data) || 'N/A';
         document.getElementById('easter24').textContent = hasBadge(data, "Easter2024Complete") || 'N/A';
-
+    
         // Ghost Statistics
-        document.getElementById('ghostDistanceTravelled').textContent = data.ghostDistanceTravelled.value || 'N/A';
-        document.getElementById('ghostInteractions').textContent = data.amountOfGhostInteractions.value || 'N/A';
-        document.getElementById('abilitiesUsed').textContent = data.abilitiesUsed.value || 'N/A';
-        document.getElementById('ghostHunts').textContent = data.amountOfGhostHunts.value || 'N/A';
-        document.getElementById('timeInFavouriteRoom').textContent = data.timeInFavouriteRoom.value || 'N/A';
-        document.getElementById('roomChanged').textContent = data.roomChanged.value || 'N/A';
-        document.getElementById('fuseboxToggles').textContent = data.fuseboxToggles.value || 'N/A';
-        document.getElementById('lightsSwitched').textContent = data.lightsSwitched.value || 'N/A';
-        document.getElementById('objectsUsed').textContent = data.objectsUsed.value || 'N/A';
-        document.getElementById('doorsMoved').textContent = data.doorsMoved.value || 'N/A';
-        document.getElementById('ghostEvents').textContent = data.amountOfGhostEvents.value || 'N/A';
-        document.getElementById('totalHuntTime').textContent = data.totalHuntTime.value || 'N/A';
-
+        document.getElementById('ghostDistanceTravelled').textContent = convertToMeters(safeGetValue(data, 'ghostDistanceTravelled'));
+        document.getElementById('ghostInteractions').textContent = safeGetValue(data, 'amountOfGhostInteractions');
+        document.getElementById('abilitiesUsed').textContent = safeGetValue(data, 'abilitiesUsed');
+        document.getElementById('ghostHunts').textContent = safeGetValue(data, 'amountOfGhostHunts');
+        document.getElementById('timeInFavouriteRoom').textContent = convertToTimeFormat(safeGetValue(data, 'timeInFavouriteRoom'));
+        document.getElementById('roomChanged').textContent = safeGetValue(data, 'roomChanged');
+        document.getElementById('fuseboxToggles').textContent = safeGetValue(data, 'fuseboxToggles');
+        document.getElementById('lightsSwitched').textContent = safeGetValue(data, 'lightsSwitched');
+        document.getElementById('objectsUsed').textContent = safeGetValue(data, 'objectsUsed');
+        document.getElementById('doorsMoved').textContent = safeGetValue(data, 'doorsMoved');
+        document.getElementById('ghostEvents').textContent = safeGetValue(data, 'amountOfGhostEvents');
+        document.getElementById('totalHuntTime').textContent = convertToTimeFormat(safeGetValue(data, 'totalHuntTime'));
+    
         // Cursed Possession Statistics
-        document.getElementById('musicBoxesFound').textContent = data.MusicBoxesFound.value || 'N/A';
-        document.getElementById('ouijasFound').textContent = data.OuijasFound.value || 'N/A';
-        document.getElementById('summoningCirclesUsed').textContent = data.SummoningCirclesUsed.value || 'N/A';
-        document.getElementById('mirrorsFound').textContent = data.MirrorsFound.value || 'N/A';
-        document.getElementById('monkeyPawFound').textContent = data.MonkeyPawFound.value || 'N/A';
-        document.getElementById('voodoosFound').textContent = data.VoodoosFound.value || 'N/A';
-        document.getElementById('tarotPriestess').textContent = data.TarotPriestess.value || 'N/A';
-        document.getElementById('tarotDeath').textContent = data.TarotDeath.value || 'N/A';
-        document.getElementById('tarotFool').textContent = data.TarotFool.value || 'N/A';
-        document.getElementById('tarotWheel').textContent = data.TarotWheel.value || 'N/A';
-        document.getElementById('tarotTower').textContent = data.TarotTower.value || 'N/A';
-        document.getElementById('tarotDevil').textContent = data.TarotDevil.value || 'N/A';
-        document.getElementById('tarotHermit').textContent = data.TarotHermit.value || 'N/A';
-        document.getElementById('tarotMoon').textContent = data.TarotMoon.value || 'N/A';
-        document.getElementById('tarotSun').textContent = data.TarotSun.value || 'N/A';
-        document.getElementById('tarotHangedMan').textContent = data.TarotHangedMan.value || 'N/A';
+        document.getElementById('amountOfCursedPossessionsUsed').textContent = safeGetValue(data, 'amountOfCursedPossessionsUsed');
+        document.getElementById('amountOfCursedHuntsTriggered').textContent = safeGetValue(data, 'amountOfCursedHuntsTriggered');
+        document.getElementById('musicBoxesFound').textContent = safeGetValue(data, 'MusicBoxesFound');
+        document.getElementById('ouijasFound').textContent = safeGetValue(data, 'OuijasFound');
+        document.getElementById('summoningCirclesUsed').textContent = safeGetValue(data, 'SummoningCirclesUsed');
+        document.getElementById('mirrorsFound').textContent = safeGetValue(data, 'MirrorsFound');
+        document.getElementById('monkeyPawFound').textContent = safeGetValue(data, 'MonkeyPawFound');
+        document.getElementById('voodoosFound').textContent = safeGetValue(data, 'VoodoosFound');
+        document.getElementById('tarotPriestess').textContent = safeGetValue(data, 'TarotPriestess');
+        document.getElementById('tarotDeath').textContent = safeGetValue(data, 'TarotDeath');
+        document.getElementById('tarotFool').textContent = safeGetValue(data, 'TarotFool');
+        document.getElementById('tarotWheel').textContent = safeGetValue(data, 'TarotWheel');
+        document.getElementById('tarotTower').textContent = safeGetValue(data, 'TarotTower');
+        document.getElementById('tarotDevil').textContent = safeGetValue(data, 'TarotDevil');
+        document.getElementById('tarotHermit').textContent = safeGetValue(data, 'TarotHermit');
+        document.getElementById('tarotMoon').textContent = safeGetValue(data, 'TarotMoon');
+        document.getElementById('tarotSun').textContent = safeGetValue(data, 'TarotSun');
+        document.getElementById('tarotHangedMan').textContent = safeGetValue(data, 'TarotHangedMan');
     }
+    
+    
+    
 
     function ghostTable(data) {
         const commonGhosts = data.mostCommonGhosts.value; // Get mostCommonGhosts
