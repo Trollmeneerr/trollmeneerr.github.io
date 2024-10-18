@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsArrayBuffer(file); // Read the file as ArrayBuffer
     });
 // Check if a badge is completed based on value
-function hasBadge(data, value) {
-    if (data.value != null){
+function hasBadge(data, x) {
+    if (data.x.value != null){
         return 'Completed';
     } else{
     return 'Not Completed'
@@ -242,14 +242,14 @@ function populateData(data) {
 
     // Badges
     document.getElementById('lighthouseKeeper').textContent = lighthouseKeeper(data) || 'N/A';
-    document.getElementById('apocalypseBronze').textContent = hasBadge(data, ApocalypseBronzeCompleted.value) || 'N/A';
-    document.getElementById('apocalypseSilver').textContent = hasBadge(dat, ApocalypseSilverCompleted.value) || 'N/A';
-    document.getElementById('apocalypseGold').textContent = hasBadge(data, ApocalypseGoldCompleted.value) || 'N/A';
+    document.getElementById('apocalypseBronze').textContent = hasBadge(data, ApocalypseBronzeCompleted) || 'N/A';
+    document.getElementById('apocalypseSilver').textContent = hasBadge(dat, ApocalypseSilverCompleted) || 'N/A';
+    document.getElementById('apocalypseGold').textContent = hasBadge(data, ApocalypseGoldCompleted) || 'N/A';
     document.getElementById('holiday22').textContent = holiday22(data) || 'N/A';
     document.getElementById('easter23').textContent = easter23(data) || 'N/A';
-    document.getElementById('halloween23').textContent = hasBadge(data, halloween23Complete.value) || 'N/A';
+    document.getElementById('halloween23').textContent = hasBadge(data, halloween23Complete) || 'N/A';
     document.getElementById('christmas23').textContent = holiday23(data) || 'N/A';
-    document.getElementById('easter24').textContent = hasBadge(data, Easter2024Complete.value) || 'N/A';
+    document.getElementById('easter24').textContent = hasBadge(data, Easter2024Complete) || 'N/A';
 
     // Ghost Statistics
     document.getElementById('ghostDistanceTravelled').textContent = data.ghostDistanceTravelled.value || 'N/A';
