@@ -165,9 +165,8 @@ function hasBadge(value) {
 // Check progress for the "Lighthouse Keeper" badge
 function lighthouseKeeper(data) {
     if (data.lighthouseKeeperProgression.value === 0) return 'Not Started';
-    else { return data.lighthouseKeeperProgression.value
     if (data.lighthouseKeeperProgression.value == 50) return 'Completed';
-    return data;
+    else { return data.lighthouseKeeperProgression.value };
 }
 
 // Check if holiday 2022 event is completed
