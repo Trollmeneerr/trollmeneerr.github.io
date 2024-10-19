@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('processDataBtn').addEventListener('click', async() => {
         const fileInput = document.getElementById('jsonFileInput');
         const password = 't36gref9u84y7f43g'; // Replace this with the actual password
-        showLoading();
+        
 
 
         if (!fileInput.files.length) {
@@ -142,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = fileInput.files[0];
         const reader = new FileReader();
         // add delay 3s
-        await new Promise(resolve => setTimeout(resolve, 3000));
         reader.onload = async(event) => {
             const encryptedData = new Uint8Array(event.target.result); // Read the file as binary
 
@@ -155,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const decryptedStr = toString(decryptedData);
                 const decodedData = fromJson(decryptedStr);
                 const fixedData = fixMapping(decodedData);
+                showLoading();
+                await new Promise(resolve => setTimeout(resolve, 3000));
                 populateData(fixedData);
                 ghostTable(fixedData);
                 playedMapsTable(fixedData);
@@ -243,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function convertToTimeFormat(seconds) {
-        if (!seconds || isNaN(seconds)) return '0 Seconds';
+        if (!seconds || isNaN(seconds)) return '00:00:00';
         seconds = Math.floor(seconds);
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -254,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function convertToMeters(meters){
         if (!meters || isNaN(meters)) return '0';
-        return Math.round(meters) + ' meter';
+        return Math.round(meters) + ' meters';
     }
 
     function roundPrecent(value) {
@@ -269,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('level').textContent = safeGetValue(data, 'NewLevel');
         document.getElementById('oldLevel').textContent = safeGetValue(data, 'Level');
         document.getElementById('playerMoney').textContent = safeGetValue(data, 'PlayersMoney');
-        document.getElementById('objectivesCompleted').textContent = safeGetValue(data, 'ObjectivesCompleted');
+        document.getElementById('objectivesCompleted').textContent = safeGetValue(data, 'objectivesCompleted');
         document.getElementById('ghostsIdentifiedAmount').textContent = safeGetValue(data, 'ghostsIdentifiedAmount');
         document.getElementById('ghostsMisidentifiedAmount').textContent = safeGetValue(data, 'ghostsMisidentifiedAmount');
         document.getElementById('phrasesRecognized').textContent = safeGetValue(data, 'phrasesRecognized');

@@ -131,6 +131,12 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+    a{
+        text-decoration: none;
+        color: #FF4081;
+        font-size: 10px;
+        text-transform: none;
+    }
 </style>
 </head>
 <body>
@@ -142,6 +148,8 @@
             <br>
             To Locate Your SaveFile Navigate to [<span id="copyText" class="pink" onclick="copyToClipboard()" value="%localappdata%low\Kinetic Games\Phasmophobia">%localappdata%low\Kinetic Games\Phasmophobia</span>].
             When you did that, copy the file "SaveFile.txt" and drag it here.
+            <br>
+            <a target="_blank" href="https://github.com/Trollmeneerr/trollmeneerr.github.io">Source code</a>
         </p>
         <label for="jsonFileInput" class="custom-file-upload">Upload/Drag File Here</label>
         <input type="file" id="jsonFileInput" accept=".txt">
