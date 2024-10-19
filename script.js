@@ -356,12 +356,14 @@ document.addEventListener('DOMContentLoaded', () => {
     <tr>
         <th>Ghost Name</th>
         <th>Most Common Count</th>
+        <th>Common Percentage</th>
         <th>Kills</th>
         <th>Death Percentage</th>
     </tr>
     `;
         // Loop through the sorted ghost entries and create table rows
         for (const [ghostName, commonCount] of sortedGhostEntries) {
+            const commonPercentage = ((commonCount / totalGhosts) * 100).toFixed(2);
             const killCount = ghostKills[ghostName] || 0; // Get kill count from ghostKills
             const killPercentage = totalKills > 0 ? ((killCount / totalKills) * 100).toFixed(2) : 0; // Calculate percentage safely
 
@@ -369,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
             <td>${ghostName}</td>
             <td>${commonCount}</td>
+            <td>${commonPercentage}%</td>
             <td>${killCount}</td>
             <td>${killPercentage}%</td> <!-- Display the percentage -->
         </tr>`;
@@ -376,10 +379,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         htmlContent += `
         <tr>
-            <td colspan="1"><strong>Total</strong></td>
-            <td colspan="1"><strong>${totalGhosts}</strong></td>
-            <td colspan="1"><strong>${totalKills}</strong></td>
-            <td colspan="1"><strong>${totalKillPrecentage}%</strong></td>
+            <td><strong>Total</strong></td>
+            <td><strong>${totalGhosts}</strong></td>
+            <td></td>
+            <td><strong>${totalKills}</strong></td>
+            <td><strong>${totalKillPrecentage}%</strong></td>
         </tr>`;
         document.getElementById('ghostDataTable').innerHTML = htmlContent;
     }
