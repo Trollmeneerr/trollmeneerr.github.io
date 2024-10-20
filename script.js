@@ -9,6 +9,16 @@ function copyToClipboard() {
             alert("Failed to copy Path to clipboard.");
         });
 }
+// Function to open the overlay
+function openOverlay() {
+    document.getElementById("instructionOverlay").style.display = "block";
+}
+
+// Function to close the overlay
+function closeOverlay() {
+    document.getElementById("instructionOverlay").style.display = "none";
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
 

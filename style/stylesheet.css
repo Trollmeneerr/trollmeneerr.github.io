@@ -1,0 +1,134 @@
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 20px; 
+    background-color: #121212; /* Dark background */
+    color: #E0E0E0; /* Light gray text for contrast */
+}
+h1 { 
+    color: #FF4081; /* Pink color for headers */
+    text-align: center; 
+    margin-bottom: 20px; 
+}
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 40px; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 8px; /* Rounded corners for the table */
+    overflow: hidden; /* Prevents border radius from leaking */
+}
+th, td { 
+    padding: 12px; 
+    text-align: left; 
+    border: 1px solid #444; /* Darker border for better visibility */
+}
+th { 
+    background-color: #FF4081; /* Pink background for header */
+    color: white; 
+}
+tr:nth-child(even) { 
+    background-color: #1E1E1E; /* Darker gray for even rows */
+}
+tr:hover { 
+    background-color: #333; /* Darker hover effect */
+}
+td { 
+    transition: background-color 0.3s; 
+}
+strong { 
+    color: #FF4081; /* Pink for strong text */
+}
+
+.PGS{
+    display: flex;
+    width: 100%;
+}
+.player, .ghost, .cursed{
+    flex: 1;
+    padding: 20px;
+}
+
+.GMdata{
+    display: flex;
+    width: 100%;
+}
+.maps{
+    flex: 1;
+    padding: 20px;
+}
+.ghosts{
+    flex: 2;
+    padding: 20px;
+}
+.input-section{
+    text-align: center;
+    margin-bottom: 50px;
+}
+.input-section  > h1{
+    font-size: 40px;
+}
+.input-section  > p{
+    font-size: 20px;
+}
+input[type="file"], button {
+    display: none;
+  }
+  
+  .button {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 25px;
+    width: 300px;
+  }
+  .button:hover{
+    color: #FF4081;
+  }
+  .pink{
+    color: #FF4081;
+  }
+  #copyText:hover{
+    color: #bf0040;
+    cursor: pointer;
+  }
+  .loading-overlay {
+    display: flex;
+    position: fixed;
+    top: -50px;
+    left: 0;
+    width: 100%;
+    height: 110%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark background with transparency */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* High z-index to appear above other content */
+}
+
+/* Centered loading spinner */
+.loading-spinner {
+    text-align: center;
+    color: white;
+}
+
+/* Simple spinner animation */
+.spinner {
+    border: 6px solid #f3f3f3; /* Light grey */
+    border-top: 6px solid #FF4081; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+a{
+    text-decoration: none;
+    color: #FF4081;
+    font-size: 10px;
+    text-transform: none;
+}
