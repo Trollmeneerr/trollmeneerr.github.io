@@ -5,7 +5,7 @@ body {
     color: #E0E0E0; /* Light gray text for contrast */
 }
 h1 { 
-    color: #FF4081; /* Pink color for headers */
+    color: #FF1a47; /* Pink color for headers */
     text-align: center; 
     margin-bottom: 20px; 
 }
@@ -23,7 +23,7 @@ th, td {
     border: 1px solid #444; /* Darker border for better visibility */
 }
 th { 
-    background-color: #FF4081; /* Pink background for header */
+    background-color: #FF1a47; /* Pink background for header */
     color: white; 
 }
 tr:nth-child(even) { 
@@ -36,7 +36,7 @@ td {
     transition: background-color 0.3s; 
 }
 strong { 
-    color: #FF4081; /* Pink for strong text */
+    color: #FF1a47; /* Pink for strong text */
 }
 
 .PGS{
@@ -83,10 +83,10 @@ input[type="file"], button {
     width: 300px;
   }
   .button:hover{
-    color: #FF4081;
+    color: #FF1a47;
   }
   .pink{
-    color: #FF4081;
+    color: #FF1a47;
   }
   #copyText:hover{
     color: #bf0040;
@@ -114,7 +114,7 @@ input[type="file"], button {
 /* Simple spinner animation */
 .spinner {
     border: 6px solid #f3f3f3; /* Light grey */
-    border-top: 6px solid #FF4081; /* Blue */
+    border-top: 6px solid #FF1a47; /* Blue */
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -128,7 +128,7 @@ input[type="file"], button {
 }
 a{
     text-decoration: none;
-    color: #FF4081;
+    color: #FF1a47;
     font-size: 10px;
     text-transform: none;
 }
