@@ -56,117 +56,110 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Uint8Array(decryptedData);
     }
 
-    function toString(data) {
+    function decodeData(data) {
         const decoder = new TextDecoder("utf-8");
         const str = decoder.decode(data);
-        return str.slice(0, str.lastIndexOf("}") + 1).trim(); // Ensure it ends properly
+        return str.slice(0, str.lastIndexOf("}") + 1).trim();
     }
-
+    
     function fixString(data) {
-        let trimmed = data.trim().replace(/\r/g, "").replace(/\n/g, "").replace(/\t/g, "");
-        console.log("Trimmed Data:", trimmed); // Log for debugging
-
-        const playedMapsIndex = trimmed.indexOf("playedMaps");
-        if (playedMapsIndex === -1) throw new Error("playedMaps not found");
-
-        const valueIndex = trimmed.indexOf("value", playedMapsIndex);
-        if (valueIndex === -1) throw new Error("value not found");
-
-        const openBracketIndex = trimmed.indexOf("{", valueIndex);
-        if (openBracketIndex === -1) throw new Error("Opening bracket not found for playedMaps");
-
-        const closeBracketIndex = trimmed.indexOf("}", openBracketIndex);
-        if (closeBracketIndex === -1) throw new Error("Closing bracket not found for playedMaps");
-
-        const firstChunk = trimmed.slice(0, openBracketIndex);
-        const badChunk = trimmed.slice(openBracketIndex, closeBracketIndex + 1);
-        const lastChunk = trimmed.slice(closeBracketIndex + 1);
-
-        // Ensure the keys in badChunk are wrapped in quotes
-        const fixedChunk = badChunk.replace(/(\d+)/g, '"$1"'); // Wrap numbers (map IDs) in quotes
-
-        return firstChunk + fixedChunk + lastChunk;
+        const trimmed = data.trim().replace(/\r/g, "").replace(/\n/g, "").replace(/\t/g, "");
+        console.log("Trimmed Data:", trimmed);
+    
+        // Ensure all property names, including negative and numeric keys, are wrapped in quotes
+        const fullyFixedData = trimmed
+            .replace(/([{,]\s*)(-?\d+)(\s*:)/g, '$1"$2"$3')  // Wrap all keys with quotes, including negative keys
+            .replace(/([{,]\s*)([a-zA-Z_]+)(\s*:)/g, '$1"$2"$3');  // Wrap unquoted alphabetic keys
+    
+        console.log("Fully Fixed Data:", fullyFixedData);
+        return fullyFixedData;
     }
-
-    function fromJson(data) {
+    
+    
+    function parseJson(data) {
+        const fixedData = fixString(data);
+    
         try {
-            const jsonData = JSON.parse(fixString(data));
-            console.log("Parsed JSON Data:", jsonData); // Log the parsed JSON
-            return Object.entries(jsonData).sort().reduce((obj, [key, value]) => {
-                obj[key] = value;
-                return obj;
-            }, {});
-        } catch (e) {
-            throw new Error(`Failed to parse JSON: ${e.message}`);
+            console.log("Data Before Parsing:", fixedData);
+            const jsonData = JSON.parse(fixedData);
+            console.log("Parsed JSON Data:", jsonData);
+            return jsonData;
+        } catch (error) {
+            const errorPosition = error.message.match(/column (\d+)/)?.[1];
+            
+            if (errorPosition) {
+                const position = parseInt(errorPosition);
+                console.error("Error detected near:", fixedData.slice(position - 50, position + 50));
+            }
+    
+            console.error("JSON Parsing Failed:", error);
+            throw new Error(`Failed to parse JSON: ${error.message}`);
         }
     }
-
-    function fixMapping(mapping) {
-        const playedMaps = mapping.playedMaps.value;
-
+    
+    function mapPlayedMaps(mapping) {
+        const playedMaps = mapping.playedMaps?.value || {};
         const playedMapsFixed = {};
+    
         for (const [k, v] of Object.entries(playedMaps)) {
-            playedMapsFixed[Object.keys(MapID).find(key => MapID[key] === parseInt(k.trim().replace(/"/g, '')))] = parseInt(v.trim().replace(/"/g, ''));
+            const mapName = Object.keys(MapID).find(key => MapID[key] === parseInt(k.replace(/"/g, '')));
+            
+            // Ensure `v` is a string before calling replace
+            const value = typeof v === "string" ? parseInt(v.replace(/"/g, '')) : parseInt(v);
+    
+            if (mapName) {
+                playedMapsFixed[mapName] = value;
+            }
         }
-
+    
         mapping.playedMaps.value = playedMapsFixed;
-
         return mapping;
     }
-
+    
     function showLoading() {
-        // Show loading screen and hide other content
         document.getElementById('loadingOverlay').style.display = 'flex';
-        // Simulate a loading process (like an API call or data processing)
-        setTimeout(function() {
-            hideLoading();
-        }, 3000); // Example: hide loading after 3 seconds
     }
     
     function hideLoading() {
-        // Hide loading screen and show the actual content
         document.getElementById('loadingOverlay').style.display = 'none';
     }
-
-    // Handling the file input and decryption
-    document.getElementById('processDataBtn').addEventListener('click', async() => {
+    
+    document.getElementById('processDataBtn').addEventListener('click', async () => {
         const fileInput = document.getElementById('jsonFileInput');
-        const password = 't36gref9u84y7f43g'; // Replace this with the actual password
-        
-
-
+        const password = 't36gref9u84y7f43g';
+    
         if (!fileInput.files.length) {
             alert('Please select a file.');
             return;
         }
+    
         const file = fileInput.files[0];
         const reader = new FileReader();
-        // add delay 3s
-        reader.onload = async(event) => {
-            const encryptedData = new Uint8Array(event.target.result); // Read the file as binary
-
+    
+        reader.onload = async (event) => {
+            const encryptedData = new Uint8Array(event.target.result);
+    
             try {
-                // Step 1: Decrypt the data
                 const decryptedData = await decryptData(encryptedData, password);
-                console.log('Decrypted Data:', decryptedData);
-
-                // Step 2: Decode the decrypted data
-                const decryptedStr = toString(decryptedData);
-                const decodedData = fromJson(decryptedStr);
-                const fixedData = fixMapping(decodedData);
+                const decryptedStr = decodeData(decryptedData);    
+                const decodedData = parseJson(decryptedStr);
+                const mappedData = mapPlayedMaps(decodedData);
+                    
                 showLoading();
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                populateData(fixedData);
-                ghostTable(fixedData);
-                playedMapsTable(fixedData);
-                console.log('Decoded and Fixed Data:', fixedData); // Handle the fixed data as needed
+                await new Promise(resolve => setTimeout(resolve, 3000));  // Simulate delay
+    
+                populateData(mappedData);
+                ghostTable(mappedData);
+                playedMapsTable(mappedData);
             } catch (error) {
-                console.error('Decoding failed:', error);
-                alert('Decoding failed. Please check your file or password.');
+                console.error('Processing Failed:', error);
+                alert('Processing failed. Please check your file or password.');
+            } finally {
+                hideLoading();
             }
         };
-
-        reader.readAsArrayBuffer(file); // Read the file as ArrayBuffer
+    
+        reader.readAsArrayBuffer(file);
     });
 
     // Check if a badge is completed based on value
@@ -188,6 +181,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (data.lighthouseKeeperProgression.value == 50) return 'Completed';
         return data.lighthouseKeeperProgression.value;
+    }
+
+    function sunnyMeadowsSurvival(data){
+        if (!data.sunnyMeadowsSurvivalProgression || data.sunnyMeadowsSurvivalProgression.value == null) {
+            return '0';
+        }
+        if (data.sunnyMeadowsSurvivalProgression.value == 50) return 'Completed';
+        return data.sunnyMeadowsSurvivalProgression.value;
+    }
+
+    function rangerChallengeProgression(data) {
+        if (!data.rangerChallengeProgression || data.rangerChallengeProgression.value == null) {
+            return '0';
+        }
+        if (data.rangerChallengeProgression.value == 50) return 'Completed';
+        return data.rangerChallengeProgression.value;
     }
 
     // Check if holiday 2022 event is completed
@@ -294,6 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Badges
         document.getElementById('lighthouseKeeper').textContent = lighthouseKeeper(data) || 'N/A';
+        document.getElementById('sunnymeadowssurvivalprogression').textContent = sunnyMeadowsSurvival(data) || 'N/A';
+        document.getElementById('rangerchallengeprogression').textContent = rangerChallengeProgression(data) || 'N/A';
         document.getElementById('apocalypseBronze').textContent = hasBadge(data, "ApocalypseBronzeCompleted") || 'N/A';
         document.getElementById('apocalypseSilver').textContent = hasBadge(data, "ApocalypseSilverCompleted") || 'N/A';
         document.getElementById('apocalypseGold').textContent = hasBadge(data, "ApocalypseGoldCompleted") || 'N/A';
@@ -302,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('halloween23').textContent = hasBadge(data, "halloween23Complete") || 'N/A';
         document.getElementById('christmas23').textContent = holiday23(data) || 'N/A';
         document.getElementById('easter24').textContent = hasBadge(data, "Easter2024Complete") || 'N/A';
-    
+
         // Ghost Statistics
         document.getElementById('ghostDistanceTravelled').textContent = convertToMeters(safeGetValue(data, 'ghostDistanceTravelled'));
         document.getElementById('ghostInteractions').textContent = safeGetValue(data, 'amountOfGhostInteractions');
