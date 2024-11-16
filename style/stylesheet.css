@@ -60,6 +60,10 @@ strong {
     flex: 2;
     padding: 20px;
 }
+.achievements{
+    flex: 1;
+    padding: 20px;
+}
 .input-section{
     text-align: center;
     margin-bottom: 50px;

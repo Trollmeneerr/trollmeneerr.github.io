@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Highschool: 10,
         TanglewoodStreetHouse: 11,
         WillowStreetHouse: 12,
-        Asylum: 13,
+        Asylum: null,
         PointHope: 14
     };
 
@@ -271,8 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!value || isNaN(value)) return '0%';
         return Math.round(value) + '%';
     }
-
-
     function populateData(data) {
         // Player Statistics
         document.getElementById('prestige').textContent = safeGetValue(data, 'Prestige');
@@ -349,8 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tarotHangedMan').textContent = safeGetValue(data, 'TarotHangedMan');
     }
     
-    
-    
 
     function ghostTable(data) {
         const commonGhosts = data.mostCommonGhosts.value; // Get mostCommonGhosts
@@ -360,6 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalKills = Object.values(ghostKills).reduce((acc, val) => acc + val, 0); // Total kills
         const totalGhosts = Object.values(commonGhosts).reduce((acc, val) => acc + val, 0);
         const totalKillPrecentage = totalKills > 0 ? ((totalKills / totalGhosts) * 100).toFixed(2) : 0;
+
+
 
         // Convert commonGhosts to an array of entries and sort by count (most common to least common)
         const sortedGhostEntries = Object.entries(commonGhosts).sort((a, b) => b[1] - a[1]);
@@ -405,7 +403,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const mapValues = playedMaps.value; // Access the value property
 
             // Calculate total plays
-            const totalPlays = Object.values(mapValues).reduce((acc, val) => acc + val, 0);
+            let totalPlays = Object.values(mapValues).reduce((acc, val) => acc + val, 0);
+            const commonGhosts = data.mostCommonGhosts.value; // Get mostCommonGhosts
+            const totalGhosts = Object.values(commonGhosts).reduce((acc, val) => acc + val, 0);
+    
+            asylum = totalGhosts - totalPlays
+
+            // add asylum to the mapValues
+            mapValues["Asylum"] = asylum;
+            
+            totalPlays = totalPlays + asylum
 
             // Convert mapValues to an array of entries and sort by value (most played to least played)
             const sortedMapEntries = Object.entries(mapValues).sort((a, b) => b[1] - a[1]);
