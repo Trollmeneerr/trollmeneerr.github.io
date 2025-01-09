@@ -6,4 +6,4 @@ If you want here to edit your safe file, you are a scumbag and should be banned 
 
 # Example
 This is my actual SaveFile from Phasmophobia
-![Alt This is an example image to show how it should look like](https://cdn.discordapp.com/attachments/1081282756224499752/1300639694068908112/image.png?ex=6721929b&is=6720411b&hm=74ce4830185a4cd1853d9dd884e5f491a0682aea328b6194a883db5396a11398& "My SaveFile from Phasmophobia")
+![Alt This is an example image to show how it should look like](https://github.com/Trollmeneerr/trollmeneerr.github.io/blob/main/images/Preview.png "My SaveFile from Phasmophobia")
