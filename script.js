@@ -1,5 +1,17 @@
+// Helper function for querying DOM elements safely:
+function getEl(selector) {
+    const element = document.querySelector(selector);
+    if (!element) {
+        console.warn(`Element not found: ${selector}`);
+    }
+    return element;
+}
+
 function copyToClipboard() {
-    var copyText = document.getElementById("copyText").innerHTML;
+    const copyTextElement = getEl("#copyText");
+    if (!copyTextElement) return; // Exit early if element is missing
+
+    const copyText = copyTextElement.innerHTML;
     navigator.clipboard.writeText(copyText)
         .then(() => {
             alert("Path copied to clipboard successfully!");
@@ -35,24 +47,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const iv = encryptedData.subarray(0, 16);
         const key = await window.crypto.subtle.importKey(
             "raw",
-            new TextEncoder().encode(password), { name: "PBKDF2" },
+            new TextEncoder().encode(password),
+            { name: "PBKDF2" },
             false, ["deriveKey"]
         );
-        const derivedKey = await window.crypto.subtle.deriveKey({
+        const derivedKey = await window.crypto.subtle.deriveKey(
+            {
                 name: "PBKDF2",
                 salt: iv,
                 iterations: 100,
                 hash: "SHA-1"
             },
-            key, { name: "AES-CBC", length: 128 },
+            key,
+            { name: "AES-CBC", length: 128 },
             false, ["decrypt"]
         );
-
-        const decryptedData = await window.crypto.subtle.decrypt({ name: "AES-CBC", iv: iv },
+    
+        const decryptedData = await window.crypto.subtle.decrypt(
+            { name: "AES-CBC", iv: iv },
             derivedKey,
             encryptedData.subarray(16)
         );
-
+    
         return new Uint8Array(decryptedData);
     }
 
@@ -68,13 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Ensure all property names, including negative and numeric keys, are wrapped in quotes
         const fullyFixedData = trimmed
-            .replace(/([{,]\s*)(-?\d+)(\s*:)/g, '$1"$2"$3')  // Wrap all keys with quotes, including negative keys
-            .replace(/([{,]\s*)([a-zA-Z_]+)(\s*:)/g, '$1"$2"$3');  // Wrap unquoted alphabetic keys
+            .replace(/([{,]\s*)(-?\d+)(\s*:)/g, '$1"$2"$3')  // Wrap keys with quotes, including negatives
+            .replace(/([{,]\s*)([a-zA-Z_]+)(\s*:)/g, '$1"$2"$3'); // Wrap unquoted alphabetic keys
     
         console.log("Fully Fixed Data:", fullyFixedData);
         return fullyFixedData;
     }
-    
     
     function parseJson(data) {
         const fixedData = fixString(data);
@@ -98,15 +113,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function mapPlayedMaps(mapping) {
-        const playedMaps = mapping.playedMaps?.value || {};
+        // Ensure mapping.playedMaps exists and is an object with a value property.
+        if (!mapping.playedMaps || typeof mapping.playedMaps !== 'object') {
+            mapping.playedMaps = { value: {} };
+            return mapping;
+        }
+        if (typeof mapping.playedMaps.value !== 'object') {
+            mapping.playedMaps.value = {};
+        }
+    
+        const playedMaps = mapping.playedMaps.value; // Guaranteed to be an object now
         const playedMapsFixed = {};
     
         for (const [k, v] of Object.entries(playedMaps)) {
+            // Parse the key as an integer and find the corresponding map name.
             const mapName = Object.keys(MapID).find(key => MapID[key] === parseInt(k.replace(/"/g, '')));
-            
-            // Ensure `v` is a string before calling replace
+            // Ensure v is converted to an integer, in case it's a string
             const value = typeof v === "string" ? parseInt(v.replace(/"/g, '')) : parseInt(v);
-    
             if (mapName) {
                 playedMapsFixed[mapName] = value;
             }
@@ -115,20 +138,22 @@ document.addEventListener('DOMContentLoaded', () => {
         mapping.playedMaps.value = playedMapsFixed;
         return mapping;
     }
-    
     function showLoading() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        const overlay = getEl('#loadingOverlay');
+        if (overlay) overlay.style.display = 'flex';
     }
     
     function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
+        const overlay = getEl('#loadingOverlay');
+        if (overlay) overlay.style.display = 'none';
     }
     
-    document.getElementById('processDataBtn').addEventListener('click', async () => {
-        const fileInput = document.getElementById('jsonFileInput');
+    const processDataBtn = getEl('#processDataBtn');
+    processDataBtn && processDataBtn.addEventListener('click', async () => {
+        const fileInput = getEl('#jsonFileInput');
         const password = 't36gref9u84y7f43g';
     
-        if (!fileInput.files.length) {
+        if (!fileInput || !fileInput.files.length) {
             alert('Please select a file.');
             return;
         }
@@ -173,21 +198,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-
     // Check progress for the "Lighthouse Keeper" badge
     function lighthouseKeeper(data) {
         if (!data.lighthouseKeeperProgression || data.lighthouseKeeperProgression.value == null) {
             return '0';
         }
-        if (data.lighthouseKeeperProgression.value == 50) return 'Completed';
+        if (data.lighthouseKeeperProgression.value === 50) return 'Completed';
         return data.lighthouseKeeperProgression.value;
     }
 
-    function sunnyMeadowsSurvival(data){
+    function sunnyMeadowsSurvival(data) {
         if (!data.sunnyMeadowsSurvivalProgression || data.sunnyMeadowsSurvivalProgression.value == null) {
             return '0';
         }
-        if (data.sunnyMeadowsSurvivalProgression.value == 50) return 'Completed';
+        if (data.sunnyMeadowsSurvivalProgression.value === 50) return 'Completed';
         return data.sunnyMeadowsSurvivalProgression.value;
     }
 
@@ -195,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!data.rangerChallengeProgression || data.rangerChallengeProgression.value == null) {
             return '0';
         }
-        if (data.rangerChallengeProgression.value == 50) return 'Completed';
+        if (data.rangerChallengeProgression.value === 50) return 'Completed';
         return data.rangerChallengeProgression.value;
     }
 
@@ -262,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    function convertToMeters(meters){
+    function convertToMeters(meters) {
         if (!meters || isNaN(meters)) return '0';
         return Math.round(meters) + ' meters';
     }
@@ -271,180 +295,209 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!value || isNaN(value)) return '0%';
         return Math.round(value) + '%';
     }
+
     function populateData(data) {
         // Player Statistics
-        document.getElementById('prestige').textContent = safeGetValue(data, 'Prestige');
-        document.getElementById('level').textContent = safeGetValue(data, 'NewLevel');
-        document.getElementById('oldLevel').textContent = safeGetValue(data, 'Level');
-        document.getElementById('playerMoney').textContent = safeGetValue(data, 'PlayersMoney');
-        document.getElementById('objectivesCompleted').textContent = safeGetValue(data, 'objectivesCompleted');
-        document.getElementById('ghostsIdentifiedAmount').textContent = safeGetValue(data, 'ghostsIdentifiedAmount');
-        document.getElementById('ghostsMisidentifiedAmount').textContent = safeGetValue(data, 'ghostsMisidentifiedAmount');
-        document.getElementById('phrasesRecognized').textContent = safeGetValue(data, 'phrasesRecognized');
-        document.getElementById('itemsBought').textContent = safeGetValue(data, 'itemsBought');
-        document.getElementById('itemsLost').textContent = safeGetValue(data, 'itemsLost');
-        document.getElementById('moneySpent').textContent = safeGetValue(data, 'moneySpent');
-        document.getElementById('moneyEarned').textContent = safeGetValue(data, 'moneyEarned');
-        document.getElementById('diedAmount').textContent = safeGetValue(data, 'diedAmount');
-        document.getElementById('timeSpentInvestigating').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInvestigating'));
-        document.getElementById('timeSpentInLight').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInLight'));
-        document.getElementById('timeSpentInDark').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInDark'));
-        document.getElementById('timeSpentBeingChased').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentBeingChased'));
-        document.getElementById('timeSpentInGhostsRoom').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInGhostsRoom'));
-        document.getElementById('timeSpentInTruck').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInTruck'));
-        document.getElementById('ghostsRepelled').textContent = safeGetValue(data, 'ghostsRepelled');
-        document.getElementById('sanityGained').textContent = roundPrecent(safeGetValue(data, 'sanityGained'));
-        document.getElementById('sanityLost').textContent = roundPrecent(safeGetValue(data, 'sanityLost'));
-        document.getElementById('distanceTravelled').textContent = convertToMeters(safeGetValue(data, 'distanceTravelled'));
-        document.getElementById('amountOfBonesCollected').textContent = safeGetValue(data, 'amountOfBonesCollected');
-        document.getElementById('photosTaken').textContent = safeGetValue(data, 'photosTaken');
+        getEl('#prestige') && (getEl('#prestige').textContent = safeGetValue(data, 'Prestige'));
+        getEl('#level') && (getEl('#level').textContent = safeGetValue(data, 'NewLevel'));
+        getEl('#oldLevel') && (getEl('#oldLevel').textContent = safeGetValue(data, 'Level'));
+        getEl('#playerMoney') && (getEl('#playerMoney').textContent = safeGetValue(data, 'PlayersMoney'));
+        getEl('#objectivesCompleted') && (getEl('#objectivesCompleted').textContent = safeGetValue(data, 'objectivesCompleted'));
+        getEl('#ghostsIdentifiedAmount') && (getEl('#ghostsIdentifiedAmount').textContent = safeGetValue(data, 'ghostsIdentifiedAmount'));
+        getEl('#ghostsMisidentifiedAmount') && (getEl('#ghostsMisidentifiedAmount').textContent = safeGetValue(data, 'ghostsMisidentifiedAmount'));
+        getEl('#phrasesRecognized') && (getEl('#phrasesRecognized').textContent = safeGetValue(data, 'phrasesRecognized'));
+        getEl('#itemsBought') && (getEl('#itemsBought').textContent = safeGetValue(data, 'itemsBought'));
+        getEl('#itemsLost') && (getEl('#itemsLost').textContent = safeGetValue(data, 'itemsLost'));
+        getEl('#moneySpent') && (getEl('#moneySpent').textContent = safeGetValue(data, 'moneySpent'));
+        getEl('#moneyEarned') && (getEl('#moneyEarned').textContent = safeGetValue(data, 'moneyEarned'));
+        getEl('#diedAmount') && (getEl('#diedAmount').textContent = safeGetValue(data, 'diedAmount'));
+        getEl('#timeSpentInvestigating') && (getEl('#timeSpentInvestigating').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInvestigating')));
+        getEl('#timeSpentInLight') && (getEl('#timeSpentInLight').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInLight')));
+        getEl('#timeSpentInDark') && (getEl('#timeSpentInDark').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInDark')));
+        getEl('#timeSpentBeingChased') && (getEl('#timeSpentBeingChased').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentBeingChased')));
+        getEl('#timeSpentInGhostsRoom') && (getEl('#timeSpentInGhostsRoom').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInGhostsRoom')));
+        getEl('#timeSpentInTruck') && (getEl('#timeSpentInTruck').textContent = convertToTimeFormat(safeGetValue(data, 'timeSpentInTruck')));
+        getEl('#ghostsRepelled') && (getEl('#ghostsRepelled').textContent = safeGetValue(data, 'ghostsRepelled'));
+        getEl('#sanityGained') && (getEl('#sanityGained').textContent = roundPrecent(safeGetValue(data, 'sanityGained')));
+        getEl('#sanityLost') && (getEl('#sanityLost').textContent = roundPrecent(safeGetValue(data, 'sanityLost')));
+        getEl('#distanceTravelled') && (getEl('#distanceTravelled').textContent = convertToMeters(safeGetValue(data, 'distanceTravelled')));
+        getEl('#amountOfBonesCollected') && (getEl('#amountOfBonesCollected').textContent = safeGetValue(data, 'amountOfBonesCollected'));
+        getEl('#photosTaken') && (getEl('#photosTaken').textContent = safeGetValue(data, 'photosTaken'));
     
         // Badges
-        document.getElementById('lighthouseKeeper').textContent = lighthouseKeeper(data) || 'N/A';
-        document.getElementById('sunnymeadowssurvivalprogression').textContent = sunnyMeadowsSurvival(data) || 'N/A';
-        document.getElementById('rangerchallengeprogression').textContent = rangerChallengeProgression(data) || 'N/A';
-        document.getElementById('apocalypseBronze').textContent = hasBadge(data, "ApocalypseBronzeCompleted") || 'N/A';
-        document.getElementById('apocalypseSilver').textContent = hasBadge(data, "ApocalypseSilverCompleted") || 'N/A';
-        document.getElementById('apocalypseGold').textContent = hasBadge(data, "ApocalypseGoldCompleted") || 'N/A';
-        document.getElementById('holiday22').textContent = holiday22(data) || 'N/A';
-        document.getElementById('easter23').textContent = easter23(data) || 'N/A';
-        document.getElementById('halloween23').textContent = hasBadge(data, "halloween23Complete") || 'N/A';
-        document.getElementById('christmas23').textContent = holiday23(data) || 'N/A';
-        document.getElementById('easter24').textContent = hasBadge(data, "Easter2024Complete") || 'N/A';
-
+        getEl('#lighthouseKeeper') && (getEl('#lighthouseKeeper').textContent = lighthouseKeeper(data) || 'N/A');
+        getEl('#sunnymeadowssurvivalprogression') && (getEl('#sunnymeadowssurvivalprogression').textContent = sunnyMeadowsSurvival(data) || 'N/A');
+        getEl('#rangerchallengeprogression') && (getEl('#rangerchallengeprogression').textContent = rangerChallengeProgression(data) || 'N/A');
+        getEl('#apocalypseBronze') && (getEl('#apocalypseBronze').textContent = hasBadge(data, "ApocalypseBronzeCompleted") || 'N/A');
+        getEl('#apocalypseSilver') && (getEl('#apocalypseSilver').textContent = hasBadge(data, "ApocalypseSilverCompleted") || 'N/A');
+        getEl('#apocalypseGold') && (getEl('#apocalypseGold').textContent = hasBadge(data, "ApocalypseGoldCompleted") || 'N/A');
+        getEl('#holiday22') && (getEl('#holiday22').textContent = holiday22(data) || 'N/A');
+        getEl('#easter23') && (getEl('#easter23').textContent = easter23(data) || 'N/A');
+        getEl('#halloween23') && (getEl('#halloween23').textContent = hasBadge(data, "halloween23Complete") || 'N/A');
+        getEl('#christmas23') && (getEl('#christmas23').textContent = holiday23(data) || 'N/A');
+        getEl('#easter24') && (getEl('#easter24').textContent = hasBadge(data, "Easter2024Complete") || 'N/A');
+    
         // Ghost Statistics
-        document.getElementById('ghostDistanceTravelled').textContent = convertToMeters(safeGetValue(data, 'ghostDistanceTravelled'));
-        document.getElementById('ghostInteractions').textContent = safeGetValue(data, 'amountOfGhostInteractions');
-        document.getElementById('abilitiesUsed').textContent = safeGetValue(data, 'abilitiesUsed');
-        document.getElementById('ghostHunts').textContent = safeGetValue(data, 'amountOfGhostHunts');
-        document.getElementById('timeInFavouriteRoom').textContent = convertToTimeFormat(safeGetValue(data, 'timeInFavouriteRoom'));
-        document.getElementById('roomChanged').textContent = safeGetValue(data, 'roomChanged');
-        document.getElementById('fuseboxToggles').textContent = safeGetValue(data, 'fuseboxToggles');
-        document.getElementById('lightsSwitched').textContent = safeGetValue(data, 'lightsSwitched');
-        document.getElementById('objectsUsed').textContent = safeGetValue(data, 'objectsUsed');
-        document.getElementById('doorsMoved').textContent = safeGetValue(data, 'doorsMoved');
-        document.getElementById('ghostEvents').textContent = safeGetValue(data, 'amountOfGhostEvents');
-        document.getElementById('totalHuntTime').textContent = convertToTimeFormat(safeGetValue(data, 'totalHuntTime'));
+        getEl('#ghostDistanceTravelled') && (getEl('#ghostDistanceTravelled').textContent = convertToMeters(safeGetValue(data, 'ghostDistanceTravelled')));
+        getEl('#ghostInteractions') && (getEl('#ghostInteractions').textContent = safeGetValue(data, 'amountOfGhostInteractions'));
+        getEl('#abilitiesUsed') && (getEl('#abilitiesUsed').textContent = safeGetValue(data, 'abilitiesUsed'));
+        getEl('#ghostHunts') && (getEl('#ghostHunts').textContent = safeGetValue(data, 'amountOfGhostHunts'));
+        getEl('#timeInFavouriteRoom') && (getEl('#timeInFavouriteRoom').textContent = convertToTimeFormat(safeGetValue(data, 'timeInFavouriteRoom')));
+        getEl('#roomChanged') && (getEl('#roomChanged').textContent = safeGetValue(data, 'roomChanged'));
+        getEl('#fuseboxToggles') && (getEl('#fuseboxToggles').textContent = safeGetValue(data, 'fuseboxToggles'));
+        getEl('#lightsSwitched') && (getEl('#lightsSwitched').textContent = safeGetValue(data, 'lightsSwitched'));
+        getEl('#objectsUsed') && (getEl('#objectsUsed').textContent = safeGetValue(data, 'objectsUsed'));
+        getEl('#doorsMoved') && (getEl('#doorsMoved').textContent = safeGetValue(data, 'doorsMoved'));
+        getEl('#ghostEvents') && (getEl('#ghostEvents').textContent = safeGetValue(data, 'amountOfGhostEvents'));
+        getEl('#totalHuntTime') && (getEl('#totalHuntTime').textContent = convertToTimeFormat(safeGetValue(data, 'totalHuntTime')));
     
         // Cursed Possession Statistics
-        document.getElementById('amountOfCursedPossessionsUsed').textContent = safeGetValue(data, 'amountOfCursedPossessionsUsed');
-        document.getElementById('amountOfCursedHuntsTriggered').textContent = safeGetValue(data, 'amountOfCursedHuntsTriggered');
-        document.getElementById('musicBoxesFound').textContent = safeGetValue(data, 'MusicBoxesFound');
-        document.getElementById('ouijasFound').textContent = safeGetValue(data, 'OuijasFound');
-        document.getElementById('summoningCirclesUsed').textContent = safeGetValue(data, 'SummoningCirclesUsed');
-        document.getElementById('mirrorsFound').textContent = safeGetValue(data, 'MirrorsFound');
-        document.getElementById('monkeyPawFound').textContent = safeGetValue(data, 'MonkeyPawFound');
-        document.getElementById('voodoosFound').textContent = safeGetValue(data, 'VoodoosFound');
-        document.getElementById('tarotPriestess').textContent = safeGetValue(data, 'TarotPriestess');
-        document.getElementById('tarotDeath').textContent = safeGetValue(data, 'TarotDeath');
-        document.getElementById('tarotFool').textContent = safeGetValue(data, 'TarotFool');
-        document.getElementById('tarotWheel').textContent = safeGetValue(data, 'TarotWheel');
-        document.getElementById('tarotTower').textContent = safeGetValue(data, 'TarotTower');
-        document.getElementById('tarotDevil').textContent = safeGetValue(data, 'TarotDevil');
-        document.getElementById('tarotHermit').textContent = safeGetValue(data, 'TarotHermit');
-        document.getElementById('tarotMoon').textContent = safeGetValue(data, 'TarotMoon');
-        document.getElementById('tarotSun').textContent = safeGetValue(data, 'TarotSun');
-        document.getElementById('tarotHangedMan').textContent = safeGetValue(data, 'TarotHangedMan');
+        getEl('#amountOfCursedPossessionsUsed') && (getEl('#amountOfCursedPossessionsUsed').textContent = safeGetValue(data, 'amountOfCursedPossessionsUsed'));
+        getEl('#amountOfCursedHuntsTriggered') && (getEl('#amountOfCursedHuntsTriggered').textContent = safeGetValue(data, 'amountOfCursedHuntsTriggered'));
+        getEl('#musicBoxesFound') && (getEl('#musicBoxesFound').textContent = safeGetValue(data, 'MusicBoxesFound'));
+        getEl('#ouijasFound') && (getEl('#ouijasFound').textContent = safeGetValue(data, 'OuijasFound'));
+        getEl('#summoningCirclesUsed') && (getEl('#summoningCirclesUsed').textContent = safeGetValue(data, 'SummoningCirclesUsed'));
+        getEl('#mirrorsFound') && (getEl('#mirrorsFound').textContent = safeGetValue(data, 'MirrorsFound'));
+        getEl('#monkeyPawFound') && (getEl('#monkeyPawFound').textContent = safeGetValue(data, 'MonkeyPawFound'));
+        getEl('#voodoosFound') && (getEl('#voodoosFound').textContent = safeGetValue(data, 'VoodoosFound'));
+        getEl('#tarotPriestess') && (getEl('#tarotPriestess').textContent = safeGetValue(data, 'TarotPriestess'));
+        getEl('#tarotDeath') && (getEl('#tarotDeath').textContent = safeGetValue(data, 'TarotDeath'));
+        getEl('#tarotFool') && (getEl('#tarotFool').textContent = safeGetValue(data, 'TarotFool'));
+        getEl('#tarotWheel') && (getEl('#tarotWheel').textContent = safeGetValue(data, 'TarotWheel'));
+        getEl('#tarotTower') && (getEl('#tarotTower').textContent = safeGetValue(data, 'TarotTower'));
+        getEl('#tarotDevil') && (getEl('#tarotDevil').textContent = safeGetValue(data, 'TarotDevil'));
+        getEl('#tarotHermit') && (getEl('#tarotHermit').textContent = safeGetValue(data, 'TarotHermit'));
+        getEl('#tarotMoon') && (getEl('#tarotMoon').textContent = safeGetValue(data, 'TarotMoon'));
+        getEl('#tarotSun') && (getEl('#tarotSun').textContent = safeGetValue(data, 'TarotSun'));
+        getEl('#tarotHangedMan') && (getEl('#tarotHangedMan').textContent = safeGetValue(data, 'TarotHangedMan'));
     }
     
-
     function ghostTable(data) {
-        const commonGhosts = data.mostCommonGhosts.value; // Get mostCommonGhosts
-        const ghostKills = data.ghostKills.value; // Get ghostKills
-
-        // Calculate total kills
-        const totalKills = Object.values(ghostKills).reduce((acc, val) => acc + val, 0); // Total kills
-        const totalGhosts = Object.values(commonGhosts).reduce((acc, val) => acc + val, 0);
-        const totalKillPrecentage = totalKills > 0 ? ((totalKills / totalGhosts) * 100).toFixed(2) : 0;
-
-
-
-        // Convert commonGhosts to an array of entries and sort by count (most common to least common)
-        const sortedGhostEntries = Object.entries(commonGhosts).sort((a, b) => b[1] - a[1]);
-        let htmlContent = `
-    <tr>
-        <th>Ghost Name</th>
-        <th>Most Common Count</th>
-        <th>Common Percentage</th>
-        <th>Kills</th>
-        <th>Death Percentage</th>
-    </tr>
-    `;
-        // Loop through the sorted ghost entries and create table rows
-        for (const [ghostName, commonCount] of sortedGhostEntries) {
-            const commonPercentage = ((commonCount / totalGhosts) * 100).toFixed(2);
-            const killCount = ghostKills[ghostName] || 0; // Get kill count from ghostKills
-            const killPercentage = totalKills > 0 ? ((killCount / totalKills) * 100).toFixed(2) : 0; // Calculate percentage safely
-
-            htmlContent += `
-        <tr>
-            <td>${ghostName}</td>
-            <td>${commonCount}</td>
-            <td>${commonPercentage}%</td>
-            <td>${killCount}</td>
-            <td>${killPercentage}%</td> <!-- Display the percentage -->
-        </tr>`;
+        // Ensure that data.mostCommonGhosts and data.ghostKills exist and have a "value" property.
+        if (!data.mostCommonGhosts || typeof data.mostCommonGhosts !== 'object') {
+            data.mostCommonGhosts = { value: {} };
         }
-
-        htmlContent += `
-        <tr>
-            <td><strong>Total</strong></td>
-            <td><strong>${totalGhosts}</strong></td>
-            <td></td>
-            <td><strong>${totalKills}</strong></td>
-            <td><strong>${totalKillPrecentage}%</strong></td>
-        </tr>`;
-        document.getElementById('ghostDataTable').innerHTML = htmlContent;
-    }
-
-    function playedMapsTable(data) {
-        const playedMaps = data.playedMaps; // Get the playedMaps object
-        if (playedMaps && playedMaps.value) {
-            const mapValues = playedMaps.value; // Access the value property
-
-            // Calculate total plays
-            let totalPlays = Object.values(mapValues).reduce((acc, val) => acc + val, 0);
-            const commonGhosts = data.mostCommonGhosts.value; // Get mostCommonGhosts
-            const totalGhosts = Object.values(commonGhosts).reduce((acc, val) => acc + val, 0);
+        if (!data.ghostKills || typeof data.ghostKills !== 'object') {
+            data.ghostKills = { value: {} };
+        }
     
-            asylum = totalGhosts - totalPlays
-
-            // add asylum to the mapValues
-            mapValues["Asylum"] = asylum;
-            
-            totalPlays = totalPlays + asylum
-
-            // Convert mapValues to an array of entries and sort by value (most played to least played)
-            const sortedMapEntries = Object.entries(mapValues).sort((a, b) => b[1] - a[1]);
-            let htmlContent = `
+        const commonGhosts = data.mostCommonGhosts.value || {};
+        const ghostKills = data.ghostKills.value || {};
+    
+        // Calculate total kills safely (if any values are strings, convert them)
+        const totalKills = Object.values(ghostKills).reduce((acc, val) => {
+            const intVal = parseInt(val);
+            return acc + (isNaN(intVal) ? 0 : intVal);
+        }, 0);
+    
+        // Calculate total ghost appearances safely (if any values are strings, convert them)
+        const totalGhosts = Object.values(commonGhosts).reduce((acc, val) => {
+            const intVal = parseInt(val);
+            return acc + (isNaN(intVal) ? 0 : intVal);
+        }, 0);
+    
+        // Avoid division by zero (if totalGhosts is 0, handle accordingly)
+        const totalKillPercentage = totalKills > 0 && totalGhosts > 0 ? ((totalKills / totalGhosts) * 100).toFixed(2) : 0;
+    
+        // Sort ghost entries from most common to least common
+        const sortedGhostEntries = Object.entries(commonGhosts).sort((a, b) => {
+            const aVal = parseInt(a[1]);
+            const bVal = parseInt(b[1]);
+            return (isNaN(bVal) ? 0 : bVal) - (isNaN(aVal) ? 0 : aVal);
+        });
+    
+        let htmlContent = `
         <tr>
-            <th>Map Name</th>
-            <th>Play Count</th>
-            <th>Percentage</th>
+            <th>Ghost Name</th>
+            <th>Most Common Count</th>
+            <th>Common Percentage</th>
+            <th>Kills</th>
+            <th>Death Percentage</th>
         </tr>
         `;
-            // Loop through the sorted entries and create table rows
-            for (const [mapName, playCount] of sortedMapEntries) {
-                const percentage = ((playCount / totalPlays) * 100).toFixed(2); // Calculate percentage
-                htmlContent += `
-            <tr>
-                <td>${mapName || 'Unknown'}</td> <!-- Display "Unknown" if mapName is not found -->
-                <td>${playCount}</td>
-                <td>${percentage}%</td> <!-- Display the percentage -->
-            </tr>`;
-            }
-            // Step 3.2: Add a total row at the end of the table
+    
+        // Loop through the sorted ghost entries and create table rows
+        for (const [ghostName, commonCount] of sortedGhostEntries) {
+            const count = parseInt(commonCount);
+            const commonPercentage = totalGhosts > 0 ? ((count / totalGhosts) * 100).toFixed(2) : 0;
+            const killCount = parseInt(ghostKills[ghostName]) || 0;
+            const killPercentage = totalKills > 0 ? ((killCount / totalKills) * 100).toFixed(2) : 0;
+    
             htmlContent += `
-        <tr>
-            <td colspan="1"><strong>Total Plays</strong></td>
-            <td colspan="1"><strong>${totalPlays}</strong></td>
-        </tr>
-        </table>
-        </article>
-        </section>
-</body>
-`;
-            document.getElementById('mapsDataTable').innerHTML = htmlContent;
+            <tr>
+                <td>${ghostName}</td>
+                <td>${count}</td>
+                <td>${commonPercentage}%</td>
+                <td>${killCount}</td>
+                <td>${killPercentage}%</td>
+            </tr>`;
+        }
+    
+        htmlContent += `
+            <tr>
+                <td><strong>Total</strong></td>
+                <td><strong>${totalGhosts}</strong></td>
+                <td></td>
+                <td><strong>${totalKills}</strong></td>
+                <td><strong>${totalKillPercentage}%</strong></td>
+            </tr>`;
+    
+        const ghostDataTable = getEl('#ghostDataTable');
+        if (ghostDataTable) {
+            ghostDataTable.innerHTML = htmlContent;
+        }
+    }
+    
+    function playedMapsTable(data) {
+        const playedMaps = data.playedMaps;
+        // Check if playedMaps exists, has a value, and that the value object is non-empty
+        if (!playedMaps || !playedMaps.value || Object.keys(playedMaps.value).length === 0) {
+            // Option 1: Clear the table content if played maps is empty
+            const mapsDataTable = getEl('#mapsDataTable');
+            if (mapsDataTable) {
+                mapsDataTable.innerHTML = '';
+            }
+            return;
+        }
+    
+        const mapValues = playedMaps.value;
+        let totalPlays = Object.values(mapValues).reduce((acc, val) => acc + val, 0);
+        const commonGhosts = data.mostCommonGhosts.value;
+        const totalGhosts = Object.values(commonGhosts).reduce((acc, val) => acc + val, 0);
+    
+        const asylum = totalGhosts - totalPlays;
+        mapValues["Asylum"] = asylum;
+        totalPlays += asylum;
+    
+        const sortedMapEntries = Object.entries(mapValues).sort((a, b) => b[1] - a[1]);
+        let htmlContent = `
+            <tr>
+                <th>Map Name</th>
+                <th>Play Count</th>
+                <th>Percentage</th>
+            </tr>
+        `;
+    
+        for (const [mapName, playCount] of sortedMapEntries) {
+            const percentage = ((playCount / totalPlays) * 100).toFixed(2);
+            htmlContent += `
+                <tr>
+                    <td>${mapName || 'Unknown'}</td>
+                    <td>${playCount}</td>
+                    <td>${percentage}%</td>
+                </tr>
+            `;
+        }
+        htmlContent += `
+            <tr>
+                <td colspan="1"><strong>Total Plays</strong></td>
+                <td colspan="1"><strong>${totalPlays}</strong></td>
+            </tr>
+        `;
+    
+        const mapsDataTable = getEl('#mapsDataTable');
+        if (mapsDataTable) {
+            mapsDataTable.innerHTML = htmlContent;
         }
     }
 });
